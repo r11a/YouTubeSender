@@ -1,0 +1,10 @@
+# Changelog
+
+## 0.1.0
+
+- בסיס Add-on ל־Home Assistant עם Ingress ו־Web UI עצמאי
+- ספריית סרטונים, ערוצים, אנשי קשר, קבוצות, קמפיינים וארכיון
+- סנכרון YouTube ונתוני צפיות/תגובות
+- Assisted WhatsApp, Email ו־Telegram
+- יבוא CSV/vCard, טיוטות AI, PWA ומיתוג ראשוני
+

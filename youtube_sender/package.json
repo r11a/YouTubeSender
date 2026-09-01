@@ -1,0 +1,13 @@
+{
+  "name": "youtube-sender",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "node --test test/*.test.js",
+    "check": "node --check server/index.js && node --check public/app.js"
+  }
+}
+

@@ -1,0 +1,14 @@
+configuration:
+  youtube_api_key:
+    name: YouTube API Key
+    description: מפתח שרת עבור YouTube Data API v3
+  sync_interval_hours:
+    name: תדירות סנכרון
+    description: מספר השעות בין סנכרונים אוטומטיים
+  timezone:
+    name: אזור זמן
+    description: אזור הזמן לתזמון קמפיינים
+  default_friday_time:
+    name: שעת יום שישי
+    description: שעת ברירת המחדל להפצה שבועית
+

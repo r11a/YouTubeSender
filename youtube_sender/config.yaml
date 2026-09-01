@@ -1,0 +1,36 @@
+name: "YouTubeSender"
+version: "0.1.0"
+slug: "youtube_sender"
+description: "ניהול והפצת סרטוני YouTube בצורה חכמה"
+url: "https://github.com/r11a/YouTubeSender"
+arch:
+  - amd64
+  - aarch64
+startup: application
+boot: auto
+init: false
+ingress: true
+ingress_port: 8099
+ingress_stream: true
+panel_icon: mdi:send-circle-outline
+panel_title: YouTubeSender
+panel_admin: false
+ports:
+  8099/tcp: 8099
+ports_description:
+  8099/tcp: "YouTubeSender standalone web interface"
+webui: "http://[HOST]:[PORT:8099]"
+watchdog: "http://[HOST]:[PORT:8099]/health"
+backup: cold
+stage: experimental
+options:
+  youtube_api_key: ""
+  sync_interval_hours: 24
+  timezone: "Asia/Jerusalem"
+  default_friday_time: "09:00"
+schema:
+  youtube_api_key: password
+  sync_interval_hours: int(1,168)
+  timezone: str
+  default_friday_time: str
+

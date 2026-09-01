@@ -1,0 +1,20 @@
+name: Publish Home Assistant image
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        arch: [amd64, aarch64]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: home-assistant/builder@master
+        with:
+          args: --${{ matrix.arch }} -t youtube_sender --docker-hub ghcr.io/r11a
+

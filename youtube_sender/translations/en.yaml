@@ -1,0 +1,14 @@
+configuration:
+  youtube_api_key:
+    name: YouTube API key
+    description: Server key for YouTube Data API v3
+  sync_interval_hours:
+    name: Sync interval
+    description: Hours between automatic synchronizations
+  timezone:
+    name: Time zone
+    description: Time zone used for campaign scheduling
+  default_friday_time:
+    name: Friday time
+    description: Default time for weekly distribution
+
