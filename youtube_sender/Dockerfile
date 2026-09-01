@@ -12,4 +12,4 @@ RUN chmod +x /etc/services.d/youtube-sender/run
 ENV PORT=8099 DATA_DIR=/data NODE_ENV=production
 EXPOSE 8099
 
-LABEL io.hass.version="0.1.2" io.hass.type="app"
+LABEL io.hass.version="0.2.0" io.hass.type="app"

@@ -72,7 +72,12 @@ export async function syncChannel(store, channel, apiKey) {
   const freshChannel = await resolveChannel(channel.youtubeId, apiKey);
   if (freshChannel.subscriberCount > (channel.subscriberCount || 0)) store.data.notifications.unshift({ id: `note_${Date.now()}_subs`, type: "subscribers", title: "הערוץ גדל", message: `נוספו ${freshChannel.subscriberCount - (channel.subscriberCount || 0)} עוקבים מאז הסנכרון הקודם`, createdAt: startedAt, read: false });
   Object.assign(channel, freshChannel, { lastSyncedAt: startedAt, updatedAt: startedAt });
+  store.data.analyticsSnapshots.push({
+    id: `snap_${Date.now()}_${channel.id}`, channelId: channel.id, capturedAt: startedAt,
+    subscriberCount: freshChannel.subscriberCount, viewCount: freshChannel.viewCount,
+    videoCount: freshChannel.videoCount, commentCount: details.reduce((sum, item) => sum + Number(item.statistics?.commentCount || 0), 0)
+  });
+  store.data.analyticsSnapshots = store.data.analyticsSnapshots.slice(-3650);
   const log = await store.create("syncLogs", "sync", { channelId: channel.id, status: "success", discovered, total: details.length, startedAt, finishedAt: new Date().toISOString() });
   await store.save(); return log;
 }
-

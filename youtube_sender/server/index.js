@@ -26,7 +26,7 @@ const add = (...args) => routes.push(route(...args));
 add("GET", /^\/api\/bootstrap$/, async (_req, res) => json(res, 200, {
   channels: store.data.channels, videos: store.data.videos, contacts: store.data.contacts, groups: store.data.groups,
   campaigns: store.data.campaigns, deliveries: store.data.deliveries, notifications: store.data.notifications.slice(0, 30),
-  syncLogs: store.data.syncLogs.slice(-20).reverse(), providers: Object.values(providers).map(({ buildUrl, ...item }) => item),
+  syncLogs: store.data.syncLogs.slice(-20).reverse(), analyticsSnapshots: store.data.analyticsSnapshots, providers: Object.values(providers).map(({ buildUrl, ...item }) => item),
   settings: publicSettings(store.data.settings)
 }));
 
@@ -88,7 +88,7 @@ async function staticFile(req, res, pathname) {
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://localhost");
-  if (url.pathname === "/health") return json(res, 200, { status: "ok", version: "0.1.2", time: now() });
+  if (url.pathname === "/health") return json(res, 200, { status: "ok", version: "0.2.0", time: now() });
   try {
     for (const item of routes) { const match = url.pathname.match(item.pattern); if (req.method === item.method && match) return await item.handler(req, res, match, url); }
     if (url.pathname.startsWith("/api/")) return json(res, 404, { error: "הנתיב לא נמצא" });

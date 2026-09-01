@@ -4,8 +4,8 @@ import { id, now } from "./lib.js";
 
 const EMPTY = {
   schemaVersion: 1,
-  channels: [], videos: [], contacts: [], groups: [], campaigns: [], deliveries: [], syncLogs: [], notifications: [],
-  settings: { locale: "he", timezone: "Asia/Jerusalem", defaultFridayTime: "09:00", aiProvider: "local", aiModel: "gpt-5-mini", youtubeApiKey: "", aiApiKey: "" }
+  channels: [], videos: [], contacts: [], groups: [], campaigns: [], deliveries: [], syncLogs: [], notifications: [], analyticsSnapshots: [],
+  settings: { locale: "he", timezone: "Asia/Jerusalem", defaultFridayTime: "09:00", aiProvider: "local", aiModel: "auto", youtubeApiKey: "", aiApiKey: "" }
 };
 
 export class Store {
@@ -43,4 +43,3 @@ export class Store {
     return before !== this.data[name].length;
   }
 }
-

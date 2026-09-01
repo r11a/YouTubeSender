@@ -1,5 +1,5 @@
 name: "YouTubeSender"
-version: "0.1.2"
+version: "0.2.0"
 slug: "youtube_sender"
 description: "ניהול והפצת סרטוני YouTube בצורה חכמה"
 url: "https://github.com/r11a/YouTubeSender"
@@ -27,7 +27,7 @@ options:
   youtube_api_key: ""
   ai_provider: "local"
   ai_api_key: ""
-  ai_model: "gpt-5-mini"
+  ai_model: "auto"
   sync_interval_hours: 24
   timezone: "Asia/Jerusalem"
   default_friday_time: "09:00"
