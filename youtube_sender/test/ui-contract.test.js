@@ -29,8 +29,8 @@ test("manual delivery, direct contacts and save feedback are wired", () => {
 });
 
 test("versioned assets prevent stale Home Assistant caches", () => {
-  assert.match(html, /app\.js\?v=0\.2\.2/);
-  assert.match(html, /theme-granite\.css\?v=0\.2\.2/);
+  assert.match(html, /app\.js\?v=0\.2\.3/);
+  assert.match(html, /theme-granite\.css\?v=0\.2\.3/);
 });
 
 test("real provider connection checks and recommendation UI are wired", () => {
@@ -42,4 +42,15 @@ test("real provider connection checks and recommendation UI are wired", () => {
 test("assisted send previews and confirms the exact recipient", () => {
   assert.match(app, /recipient-preview/);
   assert.match(app, /לפתוח שיחת WhatsApp עם/);
+});
+
+test("campaigns support multiple selected videos", () => {
+  assert.match(app, /name="videoIds"/);
+  assert.match(app, /campaign-video-option input:checked/);
+  assert.match(app, /Object\.fromEntries\(videoIds\.map/);
+});
+
+test("mobile campaign button has a direct click binding", () => {
+  assert.match(app, /\$\("\.new-campaign-top"\)\.onclick=/);
+  assert.match(theme, /z-index:999!important/);
 });
