@@ -29,8 +29,8 @@ test("manual delivery, direct contacts and save feedback are wired", () => {
 });
 
 test("versioned assets prevent stale Home Assistant caches", () => {
-  assert.match(html, /app\.js\?v=0\.2\.3/);
-  assert.match(html, /theme-granite\.css\?v=0\.2\.3/);
+  assert.match(html, /app\.js\?v=0\.3\.0/);
+  assert.match(html, /theme-granite\.css\?v=0\.3\.0/);
 });
 
 test("real provider connection checks and recommendation UI are wired", () => {
@@ -53,4 +53,12 @@ test("campaigns support multiple selected videos", () => {
 test("mobile campaign button has a direct click binding", () => {
   assert.match(app, /\$\("\.new-campaign-top"\)\.onclick=/);
   assert.match(theme, /z-index:999!important/);
+});
+
+test("mobile experience uses bottom navigation and safe areas", () => {
+  assert.match(html, /id="mobile-bottom-nav"/);
+  assert.match(html, /class="mobile-create"/);
+  assert.match(app, /mobile-nav-open/);
+  assert.match(theme, /env\(safe-area-inset-bottom\)/);
+  assert.match(theme, /scroll-snap-type:x mandatory/);
 });

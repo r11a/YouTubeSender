@@ -20,7 +20,7 @@ function videoStatus(video) { return `<span class="badge ${video.distributionSta
 function videoRow(video) { return `<div class="video-row"><img src="${escapeHtml(video.thumbnail)}" alt=""><div><h4>${escapeHtml(video.title)}</h4><div class="meta"><span>${date(video.publishedAt)}</span><span>◉ ${fmt(video.viewCount)} צפיות</span><span>☁ ${fmt(video.commentCount)} תגובות</span></div></div><button class="secondary" data-video="${video.id}">צפייה</button></div>`; }
 
 async function load() { state.data = await api("bootstrap"); render(); updateChrome(); }
-function updateChrome() { $("#nav-video-count").textContent = state.data?.videos?.length || ""; const unread = state.data?.notifications?.filter((item) => !item.read).length || 0; $("#nav-message-count").textContent = unread || ""; $("#notification-count").style.display = unread ? "block" : "none"; $$("#nav button").forEach((button) => button.classList.toggle("active", button.dataset.nav === state.page)); }
+function updateChrome() { $("#nav-video-count").textContent = state.data?.videos?.length || ""; const unread = state.data?.notifications?.filter((item) => !item.read).length || 0; $("#nav-message-count").textContent = unread || ""; $("#notification-count").style.display = unread ? "block" : "none"; $$("#nav button, #mobile-bottom-nav button[data-nav]").forEach((button) => button.classList.toggle("active", button.dataset.nav === state.page)); }
 
 function dashboard() {
   head("מרכז ההפצה", "כל מה שחשוב, במקום אחד");
@@ -117,11 +117,13 @@ async function pickPhoneContacts(){
   if(!navigator.contacts?.select)return toast("בחירה ישירה אינה נתמכת במכשיר זה",true);
   try{const selected=await navigator.contacts.select(["name","tel","email"],{multiple:true});let imported=0,skipped=0;for(const item of selected){const body={name:item.name?.[0]||"ללא שם",phone:item.tel?.[0]||"",email:item.email?.[0]||"",active:true,groupIds:[]};if(state.data.contacts.some(c=>(body.phone&&c.phone.replace(/\D/g,"")===body.phone.replace(/\D/g,""))||(body.email&&c.email===body.email))){skipped++;continue}await api("contacts",{method:"POST",body});imported++}toast(`נוספו ${imported} אנשי קשר${skipped?`; ${skipped} כפולים דולגו`:""}`);await load()}catch(error){if(error.name!=="AbortError")toast(error.message,true)}
 }
-function navigate(page){state.page=page;location.hash=page;render();$(".sidebar").classList.remove("open")}
+function navigate(page){state.page=page;location.hash=page;render();$(".sidebar").classList.remove("open");document.body.classList.remove("mobile-nav-open");window.scrollTo({top:0,behavior:"smooth"})}
 
 document.addEventListener("click",(e)=>{const nav=e.target.closest("[data-nav]");if(nav&&!nav.closest("#app")&&!nav.closest("#modal-root"))navigate(nav.dataset.nav);const action=e.target.closest('[data-action="new-campaign"]');if(action&&!action.closest("#app")&&!action.closest("#modal-root"))campaignModal()});
 $("#mobile-menu").onclick=()=>$(".sidebar").classList.toggle("open");
 $(".new-campaign-top").onclick=(event)=>{event.preventDefault();event.stopPropagation();campaignModal()};
+$("#mobile-more").onclick=()=>{$(".sidebar").classList.toggle("open");document.body.classList.toggle("mobile-nav-open",$(".sidebar").classList.contains("open"))};
+document.addEventListener("click",event=>{if(document.body.classList.contains("mobile-nav-open")&&!event.target.closest(".sidebar")&&!event.target.closest("#mobile-more")){$(".sidebar").classList.remove("open");document.body.classList.remove("mobile-nav-open")}});
 $("#notifications-button").onclick=async()=>{const old=$(".notification-panel");if(old)return old.remove();const panel=document.createElement("div");panel.className="notification-panel";panel.innerHTML=`<div class="card-head"><h3>התראות</h3></div>${state.data.notifications.length?state.data.notifications.slice(0,8).map((n)=>`<div class="note"><strong>${escapeHtml(n.title)}</strong><p>${escapeHtml(n.message)}</p></div>`).join(""):empty("אין התראות חדשות","")}`;document.body.append(panel);await api("notifications/read",{method:"POST"});state.data.notifications.forEach((n)=>n.read=true);updateChrome()};
 window.addEventListener("hashchange",()=>{state.page=location.hash.slice(1)||"dashboard";render()});
 window.addEventListener("beforeinstallprompt",(event)=>{event.preventDefault();state.installPrompt=event;$("#install-app").hidden=false});
