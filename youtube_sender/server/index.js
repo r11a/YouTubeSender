@@ -13,6 +13,9 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PORT = Number(process.env.PORT || 8099);
 const store = await new Store(process.env.DATA_DIR || path.join(ROOT, ".data")).init();
 if (process.env.YOUTUBE_API_KEY) store.data.settings.youtubeApiKey = process.env.YOUTUBE_API_KEY;
+if (process.env.AI_PROVIDER) store.data.settings.aiProvider = process.env.AI_PROVIDER;
+if (process.env.AI_API_KEY) store.data.settings.aiApiKey = process.env.AI_API_KEY;
+if (process.env.AI_MODEL) store.data.settings.aiModel = process.env.AI_MODEL;
 if (process.env.APP_TIMEZONE) store.data.settings.timezone = process.env.APP_TIMEZONE;
 if (process.env.DEFAULT_FRIDAY_TIME) store.data.settings.defaultFridayTime = process.env.DEFAULT_FRIDAY_TIME;
 
@@ -85,7 +88,7 @@ async function staticFile(req, res, pathname) {
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://localhost");
-  if (url.pathname === "/health") return json(res, 200, { status: "ok", version: "0.1.0", time: now() });
+  if (url.pathname === "/health") return json(res, 200, { status: "ok", version: "0.1.1", time: now() });
   try {
     for (const item of routes) { const match = url.pathname.match(item.pattern); if (req.method === item.method && match) return await item.handler(req, res, match, url); }
     if (url.pathname.startsWith("/api/")) return json(res, 404, { error: "הנתיב לא נמצא" });
@@ -96,4 +99,3 @@ server.listen(PORT, "0.0.0.0", () => console.log(`YouTubeSender listening on ${P
 
 const interval = Math.max(1, Number(process.env.SYNC_INTERVAL_HOURS || 24)) * 60 * 60 * 1000;
 setInterval(async () => { for (const channel of store.data.channels.filter((item) => item.enabled)) { try { await syncChannel(store, channel, store.data.settings.youtubeApiKey); } catch (error) { await store.create("syncLogs", "sync", { channelId: channel.id, status: "failed", error: error.message, startedAt: now(), finishedAt: now() }); } } }, interval).unref();
-

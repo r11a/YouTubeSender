@@ -1,5 +1,5 @@
 name: "YouTubeSender"
-version: "0.1.0"
+version: "0.1.1"
 slug: "youtube_sender"
 description: "ניהול והפצת סרטוני YouTube בצורה חכמה"
 url: "https://github.com/r11a/YouTubeSender"
@@ -25,12 +25,17 @@ backup: cold
 stage: experimental
 options:
   youtube_api_key: ""
+  ai_provider: "local"
+  ai_api_key: ""
+  ai_model: "gpt-5-mini"
   sync_interval_hours: 24
   timezone: "Asia/Jerusalem"
   default_friday_time: "09:00"
 schema:
   youtube_api_key: password
+  ai_provider: list(local|openai|gemini)
+  ai_api_key: password
+  ai_model: str
   sync_interval_hours: int(1,168)
   timezone: str
   default_friday_time: str
-

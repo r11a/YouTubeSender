@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1
+
+- העברת סרגל הניווט לימין בממשק העברי
+- הגדרת ספק, מודל ו־API Key לסוכן AI ישירות מתצורת ה־Add-on
+
 ## 0.1.0
 
 - בסיס Add-on ל־Home Assistant עם Ingress ו־Web UI עצמאי
@@ -7,4 +12,3 @@
 - סנכרון YouTube ונתוני צפיות/תגובות
 - Assisted WhatsApp, Email ו־Telegram
 - יבוא CSV/vCard, טיוטות AI, PWA ומיתוג ראשוני
-

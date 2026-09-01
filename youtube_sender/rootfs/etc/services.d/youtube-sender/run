@@ -1,7 +1,9 @@
 #!/usr/bin/with-contenv bashio
 export YOUTUBE_API_KEY="$(bashio::config 'youtube_api_key')"
+export AI_PROVIDER="$(bashio::config 'ai_provider')"
+export AI_API_KEY="$(bashio::config 'ai_api_key')"
+export AI_MODEL="$(bashio::config 'ai_model')"
 export SYNC_INTERVAL_HOURS="$(bashio::config 'sync_interval_hours')"
 export APP_TIMEZONE="$(bashio::config 'timezone')"
 export DEFAULT_FRIDAY_TIME="$(bashio::config 'default_friday_time')"
 exec node /opt/youtube-sender/server/index.js
-

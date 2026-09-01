@@ -2,6 +2,15 @@ configuration:
   youtube_api_key:
     name: YouTube API Key
     description: מפתח שרת עבור YouTube Data API v3
+  ai_provider:
+    name: ספק AI
+    description: local ללא מפתח, או OpenAI/Gemini
+  ai_api_key:
+    name: AI API Key
+    description: מפתח סודי של ספק ה-AI; נשמר בצד השרת בלבד
+  ai_model:
+    name: מודל AI
+    description: שם המודל שבו ייכתבו טיוטות ההודעות
   sync_interval_hours:
     name: תדירות סנכרון
     description: מספר השעות בין סנכרונים אוטומטיים
@@ -11,4 +20,3 @@ configuration:
   default_friday_time:
     name: שעת יום שישי
     description: שעת ברירת המחדל להפצה שבועית
-

@@ -2,6 +2,15 @@ configuration:
   youtube_api_key:
     name: YouTube API key
     description: Server key for YouTube Data API v3
+  ai_provider:
+    name: AI provider
+    description: local requires no key, or select OpenAI/Gemini
+  ai_api_key:
+    name: AI API key
+    description: Secret provider key stored server-side only
+  ai_model:
+    name: AI model
+    description: Model used to draft distribution messages
   sync_interval_hours:
     name: Sync interval
     description: Hours between automatic synchronizations
@@ -11,4 +20,3 @@ configuration:
   default_friday_time:
     name: Friday time
     description: Default time for weekly distribution
-
