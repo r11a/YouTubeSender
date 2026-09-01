@@ -29,8 +29,8 @@ test("manual delivery, direct contacts and save feedback are wired", () => {
 });
 
 test("versioned assets prevent stale Home Assistant caches", () => {
-  assert.match(html, /app\.js\?v=0\.4\.0/);
-  assert.match(html, /theme-granite\.css\?v=0\.4\.0/);
+  assert.match(html, /app\.js\?v=0\.4\.1/);
+  assert.match(html, /theme-granite\.css\?v=0\.4\.1/);
 });
 
 test("real provider connection checks and recommendation UI are wired", () => {
@@ -68,6 +68,9 @@ test("video library supports folders, shorts exclusion and bulk actions", () => 
   assert.match(app, /include-shorts/);
   assert.match(app, /campaign-selected/);
   assert.match(app, /manual-selected/);
+  assert.match(app, /move-selected/);
+  assert.match(app, /folderModal/);
+  assert.match(app, /data-folder-video/);
   assert.match(app, /video-folder/);
 });
 

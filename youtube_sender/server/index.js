@@ -4,7 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { Store } from "./store.js";
 import { json, now, publicSettings, readBody } from "./lib.js";
-import { resolveChannel, syncChannel, testYouTubeConnection } from "./youtube.js";
+import { inferVideoFolder, resolveChannel, syncChannel, testYouTubeConnection } from "./youtube.js";
 import { providers, prepareDelivery } from "./providers/index.js";
 import { generateMessage, recommendedModel, testAiConnection } from "./ai.js";
 import { mergeContacts, parseContacts } from "./importers.js";
@@ -12,6 +12,13 @@ import { mergeContacts, parseContacts } from "./importers.js";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PORT = Number(process.env.PORT || 8099);
 const store = await new Store(process.env.DATA_DIR || path.join(ROOT, ".data")).init();
+let foldersMigrated = false;
+for (const video of store.data.videos) {
+  if (video.folderSource === "manual") continue;
+  const inferred = inferVideoFolder(video);
+  if (video.folder !== inferred.folder || video.folderSource !== inferred.source) { video.folder = inferred.folder; video.folderSource = inferred.source; foldersMigrated = true; }
+}
+if (foldersMigrated) await store.save();
 if (process.env.YOUTUBE_API_KEY) store.data.settings.youtubeApiKey = process.env.YOUTUBE_API_KEY;
 if (process.env.AI_PROVIDER) store.data.settings.aiProvider = process.env.AI_PROVIDER;
 if (process.env.AI_API_KEY) store.data.settings.aiApiKey = process.env.AI_API_KEY;
@@ -50,6 +57,19 @@ for (const [resource, prefix] of [["contacts", "con"], ["groups", "grp"], ["camp
 add("POST", /^\/api\/contacts\/import$/, async (req, res) => { const body = await readBody(req); const result = mergeContacts(store, parseContacts(body.text || "", body.filename || "")); await store.save(); json(res, 200, result); });
 
 add("PATCH", /^\/api\/videos\/([^/]+)$/, async (req, res, match) => { const item = await store.update("videos", match[1], await readBody(req)); json(res, item ? 200 : 404, item || { error: "הסרטון לא נמצא" }); });
+add("POST", /^\/api\/videos\/folder$/, async (req, res) => {
+  const body = await readBody(req); const videoIds = [...new Set(body.videoIds || [])].slice(0, 100);
+  if (!videoIds.length) return json(res, 400, { error: "לא נבחרו סרטונים" });
+  if (body.mode !== "auto" && !String(body.folder || "").trim()) return json(res, 400, { error: "יש לבחור או להזין תיקייה" });
+  let updated = 0;
+  for (const videoId of videoIds) {
+    const video = store.get("videos", videoId); if (!video) continue;
+    if (body.mode === "auto") { const inferred = inferVideoFolder(video); Object.assign(video, { folder: inferred.folder, folderSource: inferred.source }); }
+    else Object.assign(video, { folder: String(body.folder).trim().slice(0, 80), folderSource: "manual" });
+    updated++;
+  }
+  await store.save(); json(res, 200, { updated });
+});
 add("POST", /^\/api\/ai\/message$/, async (req, res) => {
   const body = await readBody(req); const video = store.get("videos", body.videoId); if (!video) return json(res, 404, { error: "הסרטון לא נמצא" });
   const message = await generateMessage({ provider: store.data.settings.aiProvider, apiKey: store.data.settings.aiApiKey, model: store.data.settings.aiModel, video, tone: body.tone, detailed: body.detailed }); json(res, 200, { message });
@@ -109,7 +129,7 @@ async function staticFile(req, res, pathname) {
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://localhost");
-  if (url.pathname === "/health") return json(res, 200, { status: "ok", version: "0.4.0", time: now() });
+  if (url.pathname === "/health") return json(res, 200, { status: "ok", version: "0.4.1", time: now() });
   try {
     for (const item of routes) { const match = url.pathname.match(item.pattern); if (req.method === item.method && match) return await item.handler(req, res, match, url); }
     if (url.pathname.startsWith("/api/")) return json(res, 404, { error: "הנתיב לא נמצא" });

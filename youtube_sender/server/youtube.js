@@ -1,5 +1,35 @@
 const API = "https://www.googleapis.com/youtube/v3";
 const YOUTUBE_CATEGORIES = { "1": "קולנוע ואנימציה", "2": "רכב", "10": "מוזיקה", "15": "בעלי חיים", "17": "ספורט", "19": "טיולים ואירועים", "20": "גיימינג", "22": "אנשים ובלוגים", "23": "קומדיה", "24": "בידור", "25": "חדשות", "26": "סגנון והדרכה", "27": "חינוך", "28": "מדע וטכנולוגיה" };
+const COUNTRY_PATTERNS = [
+  ["אלבניה", /\b(albania|albanian|tirana|berat|osum|gjirokast[eë]r|shkod[eë]r|sarand[eë])\b|אלבניה/i],
+  ["מונטנגרו", /\b(montenegro|montenegrin|kotor|budva|virpazar|skadar|durmitor|podgorica)\b|מונטנגרו/i],
+  ["יוון", /\b(greece|greek|athens|santorini|crete|mykonos|corfu|rhodes)\b|יוון/i],
+  ["איטליה", /\b(italy|italian|rome|venice|florence|tuscany|sicily|milan|naples)\b|איטליה/i],
+  ["קרואטיה", /\b(croatia|croatian|dubrovnik|split|zadar|plitvice|zagreb)\b|קרואטיה/i],
+  ["בוסניה והרצגובינה", /\b(bosnia|herzegovina|sarajevo|mostar)\b|בוסניה/i],
+  ["סרביה", /\b(serbia|serbian|belgrade|novi sad)\b|סרביה/i],
+  ["צפון מקדוניה", /\b(north macedonia|macedonia|skopje|ohrid)\b|מקדוניה/i],
+  ["קוסובו", /\b(kosovo|pristina|prizren)\b|קוסובו/i],
+  ["סלובניה", /\b(slovenia|slovenian|ljubljana|bled)\b|סלובניה/i],
+  ["רומניה", /\b(romania|romanian|bucharest|transylvania|brasov)\b|רומניה/i],
+  ["בולגריה", /\b(bulgaria|bulgarian|sofia|plovdiv|varna)\b|בולגריה/i],
+  ["טורקיה", /\b(turkey|türkiye|turkish|istanbul|antalya|cappadocia|izmir)\b|טורקיה/i],
+  ["גאורגיה", /\b(georgia|georgian|tbilisi|batumi|kazbegi)\b|גאורגיה/i],
+  ["ישראל", /\b(israel|jerusalem|tel aviv|haifa|eilat|dead sea)\b|ישראל/i],
+  ["פורטוגל", /\b(portugal|portuguese|lisbon|porto|madeira|algarve)\b|פורטוגל/i],
+  ["ספרד", /\b(spain|spanish|madrid|barcelona|andalusia|mallorca|canary)\b|ספרד/i],
+  ["צרפת", /\b(france|french|paris|provence|normandy|riviera)\b|צרפת/i],
+  ["אוסטריה", /\b(austria|austrian|vienna|salzburg|tyrol|hallstatt)\b|אוסטריה/i],
+  ["שווייץ", /\b(switzerland|swiss|zurich|geneva|interlaken|lauterbrunnen)\b|שווייץ/i]
+];
+
+export function inferVideoFolder(video) {
+  const haystack = `${video.snippet?.title || video.title || ""} ${video.snippet?.description || video.description || ""} ${(video.snippet?.tags || video.tags || []).join(" ")}`;
+  const country = COUNTRY_PATTERNS.find(([, pattern]) => pattern.test(haystack));
+  if (country) return { folder: country[0], source: "country" };
+  const categoryId = video.snippet?.categoryId || video.youtubeCategoryId || "";
+  return { folder: YOUTUBE_CATEGORIES[categoryId] || "כללי", source: "category" };
+}
 
 function durationSeconds(iso = "PT0S") {
   const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
@@ -67,6 +97,7 @@ export async function syncChannel(store, channel, apiKey) {
   let discovered = 0;
   for (const video of details) {
     const current = store.data.videos.find((item) => item.youtubeId === video.id);
+    const inferredFolder = inferVideoFolder(video);
     const values = {
       channelId: channel.id, youtubeId: video.id, title: video.snippet.title, description: video.snippet.description,
       thumbnail: video.snippet.thumbnails?.maxres?.url || video.snippet.thumbnails?.high?.url,
@@ -77,7 +108,8 @@ export async function syncChannel(store, channel, apiKey) {
       distributionStatus: current?.distributionStatus || "new",
       contentType: current?.contentType || (/\b#shorts?\b/i.test(`${video.snippet.title} ${video.snippet.description}`) || durationSeconds(video.contentDetails.duration) <= 180 ? "short" : "standard"),
       youtubeCategoryId: video.snippet.categoryId || "",
-      folder: current?.folder || YOUTUBE_CATEGORIES[video.snippet.categoryId] || "כללי",
+      folder: current?.folderSource === "manual" ? current.folder : inferredFolder.folder,
+      folderSource: current?.folderSource === "manual" ? "manual" : inferredFolder.source,
       tags: video.snippet.tags || []
     };
     if (current) {
