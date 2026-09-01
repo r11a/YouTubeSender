@@ -19,9 +19,17 @@ export const readBody = async (req, limit = 2_000_000) => {
   catch { throw Object.assign(new Error("JSON לא תקין"), { status: 400 }); }
 };
 export const cleanPhone = (value = "") => String(value).replace(/[^+\d]/g, "");
+export const normalizePhone = (value = "", defaultCountryCode = "972") => {
+  let phone = String(value).trim().replace(/[^\d+]/g, "");
+  if (phone.startsWith("00")) phone = phone.slice(2);
+  if (phone.startsWith("+")) phone = phone.slice(1);
+  phone = phone.replace(/\D/g, "");
+  if (phone.startsWith("0")) phone = `${defaultCountryCode}${phone.slice(1)}`;
+  if (phone.length < 8 || phone.length > 15) throw new Error("מספר הטלפון אינו תקין. הזינו למשל 0501234567 או ‎+972501234567");
+  return phone;
+};
 export const publicSettings = (settings) => ({
   ...settings,
   youtubeApiKey: settings.youtubeApiKey ? "••••••••" : "",
   aiApiKey: settings.aiApiKey ? "••••••••" : ""
 });
-

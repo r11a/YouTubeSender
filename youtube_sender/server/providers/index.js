@@ -1,9 +1,9 @@
-import { cleanPhone } from "../lib.js";
+import { normalizePhone } from "../lib.js";
 
 export const providers = {
   whatsapp: {
     id: "whatsapp", label: "WhatsApp", mode: "assisted",
-    buildUrl({ recipient, message }) { return `https://wa.me/${cleanPhone(recipient.phone)}?text=${encodeURIComponent(message)}`; }
+    buildUrl({ recipient, message }) { return `https://wa.me/${normalizePhone(recipient.phone)}?text=${encodeURIComponent(message)}`; }
   },
   email: {
     id: "email", label: "Email", mode: "assisted",
@@ -20,4 +20,3 @@ export function prepareDelivery(providerId, values) {
   if (!provider) throw new Error("ספק השליחה אינו נתמך");
   return { provider: providerId, mode: provider.mode, launchUrl: provider.buildUrl(values) };
 }
-

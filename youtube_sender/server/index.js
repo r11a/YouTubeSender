@@ -59,7 +59,7 @@ add("POST", /^\/api\/deliveries\/prepare$/, async (req, res) => {
   if (!video || !contact) return json(res, 404, { error: "הסרטון או איש הקשר לא נמצאו" });
   const duplicate = store.data.deliveries.find((item) => item.videoId === video.id && item.contactId === contact.id && item.status === "sent");
   const prepared = prepareDelivery(body.provider || "whatsapp", { recipient: contact, subject: body.subject, message: body.message, videoUrl: video.url });
-  json(res, 200, { ...prepared, duplicate: duplicate ? { sentAt: duplicate.sentAt, message: duplicate.message } : null });
+  json(res, 200, { ...prepared, recipient: { name: contact.name, phone: contact.phone, email: contact.email }, duplicate: duplicate ? { sentAt: duplicate.sentAt, message: duplicate.message } : null });
 });
 add("POST", /^\/api\/deliveries\/confirm$/, async (req, res) => {
   const body = await readBody(req); const delivery = await store.create("deliveries", "del", { campaignId: body.campaignId || null, videoId: body.videoId, contactId: body.contactId || null, provider: body.provider || "manual", message: body.message || "", status: body.status || "sent", sentAt: body.sentAt || now(), providerMessageId: body.providerMessageId || null, failureReason: body.failureReason || null });
@@ -98,7 +98,7 @@ async function staticFile(req, res, pathname) {
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://localhost");
-  if (url.pathname === "/health") return json(res, 200, { status: "ok", version: "0.2.1", time: now() });
+  if (url.pathname === "/health") return json(res, 200, { status: "ok", version: "0.2.2", time: now() });
   try {
     for (const item of routes) { const match = url.pathname.match(item.pattern); if (req.method === item.method && match) return await item.handler(req, res, match, url); }
     if (url.pathname.startsWith("/api/")) return json(res, 404, { error: "הנתיב לא נמצא" });

@@ -24,7 +24,15 @@ test("deduplicates imported contacts", () => {
 
 test("builds encoded assisted delivery links", () => {
   const result = prepareDelivery("whatsapp", { recipient: { phone: "+972 50-123-4567" }, message: "שלום עולם" });
-  assert.match(result.launchUrl, /^https:\/\/wa\.me\/\+972501234567\?text=/);
+  assert.match(result.launchUrl, /^https:\/\/wa\.me\/972501234567\?text=/);
   assert.equal(result.mode, "assisted");
 });
 
+test("normalizes a local Israeli mobile number for WhatsApp", () => {
+  const result = prepareDelivery("whatsapp", { recipient: { phone: "050-123-4567" }, message: "בדיקה" });
+  assert.match(result.launchUrl, /^https:\/\/wa\.me\/972501234567\?text=/);
+});
+
+test("rejects an invalid WhatsApp phone number", () => {
+  assert.throws(() => prepareDelivery("whatsapp", { recipient: { phone: "123" }, message: "בדיקה" }), /אינו תקין/);
+});
