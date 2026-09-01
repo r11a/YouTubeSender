@@ -11,7 +11,7 @@ async function api(path, options = {}) {
   if (!response.ok) { const payload = await response.json().catch(() => ({})); throw new Error(payload.error || `שגיאה ${response.status}`); }
   return response.status === 204 ? null : response.json();
 }
-function toast(message, error = false) { const node = $("#toast"); node.textContent = message; node.style.background = error ? "#b42334" : "#111827"; node.classList.add("show"); setTimeout(() => node.classList.remove("show"), 3000); }
+function toast(message, error = false) { const node = $("#toast"); node.textContent = message; node.style.background = error ? "#b42334" : "#19191b"; node.classList.add("show"); setTimeout(() => node.classList.remove("show"), 3000); }
 function modal(content, wide = false) { $("#modal-root").innerHTML = `<div class="modal-backdrop"><div class="modal ${wide ? "wide" : ""}">${content}</div></div>`; $(".modal-backdrop").addEventListener("click", (event) => { if (event.target === event.currentTarget) closeModal(); }); }
 function closeModal() { $("#modal-root").innerHTML = ""; }
 function head(title, eyebrow) { $("#page-title").textContent = title; $("#eyebrow").textContent = eyebrow; }
@@ -97,4 +97,3 @@ window.addEventListener("beforeinstallprompt",(event)=>{event.preventDefault();s
 $("#install-app").onclick=async()=>{await state.installPrompt?.prompt();state.installPrompt=null;$("#install-app").hidden=true};
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(console.warn);
 load().catch((error)=>{$("#app").innerHTML=empty("לא הצלחנו לפתוח את האפליקציה",escapeHtml(error.message),'<br><button class="primary" onclick="location.reload()">ניסיון נוסף</button>')});
-

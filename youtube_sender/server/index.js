@@ -88,7 +88,7 @@ async function staticFile(req, res, pathname) {
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://localhost");
-  if (url.pathname === "/health") return json(res, 200, { status: "ok", version: "0.1.1", time: now() });
+  if (url.pathname === "/health") return json(res, 200, { status: "ok", version: "0.1.2", time: now() });
   try {
     for (const item of routes) { const match = url.pathname.match(item.pattern); if (req.method === item.method && match) return await item.handler(req, res, match, url); }
     if (url.pathname.startsWith("/api/")) return json(res, 404, { error: "הנתיב לא נמצא" });
