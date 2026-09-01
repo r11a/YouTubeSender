@@ -52,7 +52,18 @@ add("POST", /^\/api\/contacts\/import$/, async (req, res) => { const body = awai
 add("PATCH", /^\/api\/videos\/([^/]+)$/, async (req, res, match) => { const item = await store.update("videos", match[1], await readBody(req)); json(res, item ? 200 : 404, item || { error: "הסרטון לא נמצא" }); });
 add("POST", /^\/api\/ai\/message$/, async (req, res) => {
   const body = await readBody(req); const video = store.get("videos", body.videoId); if (!video) return json(res, 404, { error: "הסרטון לא נמצא" });
-  const message = await generateMessage({ provider: store.data.settings.aiProvider, apiKey: store.data.settings.aiApiKey, model: store.data.settings.aiModel, video, tone: body.tone }); json(res, 200, { message });
+  const message = await generateMessage({ provider: store.data.settings.aiProvider, apiKey: store.data.settings.aiApiKey, model: store.data.settings.aiModel, video, tone: body.tone, detailed: body.detailed }); json(res, 200, { message });
+});
+add("POST", /^\/api\/ai\/messages$/, async (req, res) => {
+  const body = await readBody(req); const videoIds = [...new Set(body.videoIds || [])].slice(0, 20);
+  if (!videoIds.length) return json(res, 400, { error: "לא נבחרו סרטונים" });
+  const messages = [];
+  for (const videoId of videoIds) {
+    const video = store.get("videos", videoId); if (!video) continue;
+    const message = await generateMessage({ provider: store.data.settings.aiProvider, apiKey: store.data.settings.aiApiKey, model: store.data.settings.aiModel, video, tone: body.tone, detailed: true });
+    messages.push({ videoId, title: video.title, message });
+  }
+  json(res, 200, { messages });
 });
 add("POST", /^\/api\/deliveries\/prepare$/, async (req, res) => {
   const body = await readBody(req); const video = store.get("videos", body.videoId); const contact = store.get("contacts", body.contactId);
@@ -98,7 +109,7 @@ async function staticFile(req, res, pathname) {
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://localhost");
-  if (url.pathname === "/health") return json(res, 200, { status: "ok", version: "0.3.0", time: now() });
+  if (url.pathname === "/health") return json(res, 200, { status: "ok", version: "0.4.0", time: now() });
   try {
     for (const item of routes) { const match = url.pathname.match(item.pattern); if (req.method === item.method && match) return await item.handler(req, res, match, url); }
     if (url.pathname.startsWith("/api/")) return json(res, 404, { error: "הנתיב לא נמצא" });

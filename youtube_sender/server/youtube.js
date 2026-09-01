@@ -1,4 +1,10 @@
 const API = "https://www.googleapis.com/youtube/v3";
+const YOUTUBE_CATEGORIES = { "1": "קולנוע ואנימציה", "2": "רכב", "10": "מוזיקה", "15": "בעלי חיים", "17": "ספורט", "19": "טיולים ואירועים", "20": "גיימינג", "22": "אנשים ובלוגים", "23": "קומדיה", "24": "בידור", "25": "חדשות", "26": "סגנון והדרכה", "27": "חינוך", "28": "מדע וטכנולוגיה" };
+
+function durationSeconds(iso = "PT0S") {
+  const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  return Number(match?.[1] || 0) * 3600 + Number(match?.[2] || 0) * 60 + Number(match?.[3] || 0);
+}
 
 async function call(endpoint, params, apiKey) {
   const url = new URL(`${API}/${endpoint}`);
@@ -68,7 +74,11 @@ export async function syncChannel(store, channel, apiKey) {
       privacyStatus: video.status?.privacyStatus || "public", viewCount: Number(video.statistics?.viewCount || 0),
       likeCount: Number(video.statistics?.likeCount || 0), commentCount: Number(video.statistics?.commentCount || 0),
       url: `https://www.youtube.com/watch?v=${video.id}`, lastSyncedAt: startedAt,
-      distributionStatus: current?.distributionStatus || "new"
+      distributionStatus: current?.distributionStatus || "new",
+      contentType: current?.contentType || (/\b#shorts?\b/i.test(`${video.snippet.title} ${video.snippet.description}`) || durationSeconds(video.contentDetails.duration) <= 180 ? "short" : "standard"),
+      youtubeCategoryId: video.snippet.categoryId || "",
+      folder: current?.folder || YOUTUBE_CATEGORIES[video.snippet.categoryId] || "כללי",
+      tags: video.snippet.tags || []
     };
     if (current) {
       if (values.commentCount > (current.commentCount || 0)) store.data.notifications.unshift({ id: `note_${Date.now()}_${video.id}`, type: "comments", title: "תגובות חדשות", message: `${values.commentCount - (current.commentCount || 0)} תגובות חדשות ב־${video.snippet.title}`, videoId: current.id, createdAt: startedAt, read: false });

@@ -29,8 +29,8 @@ test("manual delivery, direct contacts and save feedback are wired", () => {
 });
 
 test("versioned assets prevent stale Home Assistant caches", () => {
-  assert.match(html, /app\.js\?v=0\.3\.0/);
-  assert.match(html, /theme-granite\.css\?v=0\.3\.0/);
+  assert.match(html, /app\.js\?v=0\.4\.0/);
+  assert.match(html, /theme-granite\.css\?v=0\.4\.0/);
 });
 
 test("real provider connection checks and recommendation UI are wired", () => {
@@ -61,4 +61,18 @@ test("mobile experience uses bottom navigation and safe areas", () => {
   assert.match(app, /mobile-nav-open/);
   assert.match(theme, /env\(safe-area-inset-bottom\)/);
   assert.match(theme, /scroll-snap-type:x mandatory/);
+});
+
+test("video library supports folders, shorts exclusion and bulk actions", () => {
+  assert.match(app, /state\.selectedVideos/);
+  assert.match(app, /include-shorts/);
+  assert.match(app, /campaign-selected/);
+  assert.match(app, /manual-selected/);
+  assert.match(app, /video-folder/);
+});
+
+test("archive is card based and AI drafts one message per video", () => {
+  assert.match(app, /archive-card/);
+  assert.match(app, /api\("ai\/messages"/);
+  assert.match(app, /data-video-message/);
 });

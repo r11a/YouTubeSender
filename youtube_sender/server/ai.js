@@ -23,12 +23,13 @@ export async function testAiConnection({ provider, apiKey, model }) {
   throw new Error("ספק AI אינו נתמך");
 }
 
-export async function generateMessage({ provider, apiKey, model, video, tone = "personal" }) {
+export async function generateMessage({ provider, apiKey, model, video, tone = "personal", detailed = false }) {
   if (provider === "local" || !apiKey) {
     const intro = tone === "professional" ? "בסרטון החדש אני מציג" : tone === "marketing" ? "עלה סרטון חדש ששווה לראות:" : "רציתי לשתף אתכם בסרטון החדש שלי:";
-    return `${intro}\n\n${video.title}\n\n${String(video.description || "").split("\n")[0].slice(0, 180)}\n\nלצפייה 👇\n${video.url}`;
+    const description = String(video.description || "").replace(/\s+/g, " ").trim().slice(0, detailed ? 520 : 180);
+    return detailed ? `${intro}\n\n${video.title}\n\n${description || "בסרטון תוכלו להכיר את הנושא מקרוב ולראות את הפרטים בצורה ברורה ונעימה."}\n\nאם הנושא מעניין אתכם, אני מזמין אתכם לצפות ולשתף מה חשבתם.\n\nלצפייה 👇\n${video.url}` : `${intro}\n\n${video.title}\n\n${description}\n\nלצפייה 👇\n${video.url}`;
   }
-  const prompt = `כתוב הודעה בעברית, בסגנון ${tones[tone] || tones.personal}, עד 70 מילים, להפצת סרטון. אל תמציא עובדות. כותרת: ${video.title}\nתיאור: ${video.description}\nקישור: ${video.url}`;
+  const prompt = `כתוב הודעת הפצה בעברית, בסגנון ${tones[tone] || tones.personal}, ${detailed ? "מפורטת, נעימה ומסקרנת, 90–140 מילים" : "עד 70 מילים"}. הסבר בבירור מה רואים או לומדים בסרטון, למה כדאי לצפות בו, וסיים בהזמנה טבעית לצפייה. אל תמציא עובדות שאינן בכותרת או בתיאור. כותרת: ${video.title}\nתיאור: ${video.description}\nקישור: ${video.url}`;
   if (provider === "openai") {
     const response = await fetch("https://api.openai.com/v1/responses", { method: "POST", headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json" }, body: JSON.stringify({ model: !model || model === "auto" ? recommendedModel(provider) : model, input: prompt }) });
     const data = await response.json();
