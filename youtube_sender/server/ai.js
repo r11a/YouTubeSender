@@ -44,3 +44,10 @@ export async function generateMessage({ provider, apiKey, model, video, tone = "
   }
   throw new Error("ספק AI אינו נתמך");
 }
+
+export async function generateContentKit(options) {
+  const message = await generateMessage({ ...options, detailed: true });
+  const video = options.video; const words = `${video.title} ${video.description || ""}`.toLowerCase();
+  const tags = [...new Set([video.folder, /drone|aerial/.test(words) ? "רחפן" : null, /travel|journey|טיול/.test(words) ? "טיולים" : null, "YouTube"].filter(Boolean))];
+  return { message, shortMessage: `${video.title}\n\nלצפייה: ${video.url}`, subject: `סרטון חדש: ${video.title}`.slice(0, 100), hashtags: tags.map(t=>`#${String(t).replace(/\s+/g,"")}`).join(" "), quality: { score: Math.min(100, 65 + (video.description?.length > 120 ? 15 : 0) + (video.thumbnail ? 10 : 0) + (video.folder ? 10 : 0)), warnings: video.description?.length ? [] : ["חסר תיאור מקור ולכן המלל עשוי להיות כללי"] } };
+}

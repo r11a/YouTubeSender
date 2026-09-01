@@ -29,8 +29,8 @@ test("manual delivery, direct contacts and save feedback are wired", () => {
 });
 
 test("versioned assets prevent stale Home Assistant caches", () => {
-  assert.match(html, /app\.js\?v=0\.5\.0/);
-  assert.match(html, /theme-granite\.css\?v=0\.5\.0/);
+  assert.match(html, /app\.js\?v=0\.6\.0/);
+  assert.match(html, /theme-granite\.css\?v=0\.6\.0/);
 });
 
 test("real provider connection checks and recommendation UI are wired", () => {
@@ -41,7 +41,8 @@ test("real provider connection checks and recommendation UI are wired", () => {
 
 test("assisted send previews and confirms the exact recipient", () => {
   assert.match(app, /recipient-preview/);
-  assert.match(app, /לפתוח שיחת WhatsApp עם/);
+  assert.match(app, /לפתוח שיחה עם/);
+  assert.match(app, /frequencyWarning/);
 });
 
 test("campaigns support multiple selected videos", () => {
@@ -78,4 +79,15 @@ test("archive is card based and AI drafts one message per video", () => {
   assert.match(app, /archive-card/);
   assert.match(app, /api\("ai\/messages"/);
   assert.match(app, /data-video-message/);
+});
+
+test("advanced workspace, audiences, automations and reliability tools are exposed", () => {
+  assert.match(html, /data-nav="workspace"/);
+  assert.match(html, /data-nav="audiences"/);
+  assert.match(html, /data-nav="automations"/);
+  assert.match(app, /workflow-board/);
+  assert.match(app, /wizard-steps/);
+  assert.match(app, /ai\/content-kit/);
+  assert.match(app, /download-backup/);
+  assert.match(app, /show-diagnostics/);
 });

@@ -1,5 +1,5 @@
 name: "YouTubeSender"
-version: "0.5.0"
+version: "0.6.0"
 slug: "youtube_sender"
 description: "ניהול והפצת סרטוני YouTube בצורה חכמה"
 url: "https://github.com/r11a/YouTubeSender"
@@ -28,6 +28,11 @@ options:
   ai_provider: "local"
   ai_api_key: ""
   ai_model: "auto"
+  telegram_bot_token: ""
+  telegram_chat_id: ""
+  whatsapp_token: ""
+  whatsapp_phone_number_id: ""
+  max_messages_per_contact_week: 3
   sync_interval_hours: 24
   timezone: "Asia/Jerusalem"
   default_friday_time: "09:00"
@@ -36,6 +41,11 @@ schema:
   ai_provider: list(local|openai|gemini)
   ai_api_key: password
   ai_model: str
+  telegram_bot_token: password
+  telegram_chat_id: str
+  whatsapp_token: password
+  whatsapp_phone_number_id: str
+  max_messages_per_contact_week: int(1,20)
   sync_interval_hours: int(1,168)
   timezone: str
   default_friday_time: str

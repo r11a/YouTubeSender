@@ -31,5 +31,7 @@ export const normalizePhone = (value = "", defaultCountryCode = "972") => {
 export const publicSettings = (settings) => ({
   ...settings,
   youtubeApiKey: settings.youtubeApiKey ? "••••••••" : "",
-  aiApiKey: settings.aiApiKey ? "••••••••" : ""
+  aiApiKey: settings.aiApiKey ? "••••••••" : "",
+  telegramBotToken: settings.telegramBotToken ? "••••••••" : "",
+  whatsappToken: settings.whatsappToken ? "••••••••" : ""
 });

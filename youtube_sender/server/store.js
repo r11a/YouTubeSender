@@ -3,16 +3,16 @@ import path from "node:path";
 import { id, now } from "./lib.js";
 
 const EMPTY = {
-  schemaVersion: 1,
-  channels: [], videos: [], contacts: [], groups: [], campaigns: [], deliveries: [], syncLogs: [], notifications: [], analyticsSnapshots: [],
-  settings: { locale: "he", timezone: "Asia/Jerusalem", defaultFridayTime: "09:00", aiProvider: "local", aiModel: "auto", youtubeApiKey: "", aiApiKey: "" }
+  schemaVersion: 2,
+  channels: [], videos: [], contacts: [], groups: [], campaigns: [], deliveries: [], syncLogs: [], notifications: [], analyticsSnapshots: [], automations: [], tasks: [], auditLog: [], linkEvents: [],
+  settings: { locale: "he", timezone: "Asia/Jerusalem", defaultFridayTime: "09:00", aiProvider: "local", aiModel: "auto", youtubeApiKey: "", aiApiKey: "", telegramBotToken: "", telegramChatId: "", whatsappToken: "", whatsappPhoneNumberId: "", maxMessagesPerContactWeek: 3 }
 };
 
 export class Store {
   constructor(dir) { this.dir = dir; this.file = path.join(dir, "youtube-sender.json"); this.data = structuredClone(EMPTY); this.queue = Promise.resolve(); }
   async init() {
     await mkdir(this.dir, { recursive: true });
-    try { this.data = { ...structuredClone(EMPTY), ...JSON.parse(await readFile(this.file, "utf8")) }; }
+    try { const saved = JSON.parse(await readFile(this.file, "utf8")); this.data = { ...structuredClone(EMPTY), ...saved, settings: { ...structuredClone(EMPTY.settings), ...(saved.settings || {}) }, schemaVersion: 2 }; }
     catch (error) { if (error.code !== "ENOENT") throw error; await this.save(); }
     return this;
   }

@@ -3,25 +3,28 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#19191b"><meta name="description" content="ניהול חכם של הפצת סרטוני YouTube">
-  <link rel="manifest" href="manifest.webmanifest?v=0.5.0"><link rel="icon" href="icon-192.png?v=0.5.0"><link rel="apple-touch-icon" href="icon-192.png?v=0.5.0">
-  <link rel="stylesheet" href="styles.css?v=0.5.0"><link rel="stylesheet" href="theme-granite.css?v=0.5.0"><title>YouTubeSender</title>
+  <link rel="manifest" href="manifest.webmanifest?v=0.6.0"><link rel="icon" href="icon-192.png?v=0.6.0"><link rel="apple-touch-icon" href="icon-192.png?v=0.6.0">
+  <link rel="stylesheet" href="styles.css?v=0.6.0"><link rel="stylesheet" href="theme-granite.css?v=0.6.0"><title>YouTubeSender</title>
 </head>
 <body>
   <div class="app-shell">
     <aside class="sidebar">
-      <button class="brand" data-nav="dashboard" aria-label="דף הבית"><img src="icon-192.png?v=0.5.0" alt="לוגו YouTubeSender"><span><strong>YouTubeSender</strong><small>Content Flow</small></span></button>
+      <button class="brand" data-nav="dashboard" aria-label="דף הבית"><img src="icon-192.png?v=0.6.0" alt="לוגו YouTubeSender"><span><strong>YouTubeSender</strong><small>Content Flow</small></span></button>
       <nav id="nav">
         <button data-nav="dashboard" class="active"><span class="app-icon"><svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8v9a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg></span>סקירה</button>
+        <button data-nav="workspace"><span class="app-icon"><svg viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16M7 3v4m5 3v4m5 3v4"/></svg></span>מרכז עבודה</button>
         <button data-nav="videos"><span class="app-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9 5 3-5 3z"/></svg></span>סרטונים <b id="nav-video-count"></b></button>
         <button data-nav="campaigns"><span class="app-icon"><svg viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4zM22 2 11 13"/></svg></span>הפצות</button>
         <button data-nav="contacts"><span class="app-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21v-2a6 6 0 0 1 6-6h2a6 6 0 0 1 6 6v2M17 11h5m-2.5-2.5v5"/></svg></span>אנשי קשר</button>
+        <button data-nav="audiences"><span class="app-icon"><svg viewBox="0 0 24 24"><circle cx="8" cy="9" r="3"/><circle cx="17" cy="8" r="2"/><path d="M2 21v-2a6 6 0 0 1 12 0v2m1-7a5 5 0 0 1 7 4.6V21"/></svg></span>קהלים וקבוצות</button>
         <button data-nav="analytics"><span class="app-icon"><svg viewBox="0 0 24 24"><path d="M4 20V10m6 10V4m6 16v-7m5 7H2"/></svg></span>סטטיסטיקות</button>
         <button data-nav="messages"><span class="app-icon"><svg viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg></span>הודעות <b id="nav-message-count"></b></button>
         <button data-nav="archive"><span class="app-icon"><svg viewBox="0 0 24 24"><path d="M3 6h18v15H3zM2 3h20v4H2zm8 8h4"/></svg></span>ארכיון</button>
         <button data-nav="channels"><span class="app-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M5.6 18.4a9 9 0 0 1 0-12.8m12.8 0a9 9 0 0 1 0 12.8M8.5 15.5a5 5 0 0 1 0-7m7 0a5 5 0 0 1 0 7"/></svg></span>ערוצים</button>
+        <button data-nav="automations"><span class="app-icon"><svg viewBox="0 0 24 24"><path d="m13 2-8 12h7l-1 8 8-12h-7z"/></svg></span>אוטומציות</button>
         <button data-nav="settings"><span class="app-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a2 2 0 0 0 .4 2.2l.1.1-2.8 2.8-.1-.1a2 2 0 0 0-2.2-.4 2 2 0 0 0-1.2 1.8V22H9.6v-.6A2 2 0 0 0 8.4 19.6a2 2 0 0 0-2.2.4l-.1.1-2.8-2.8.1-.1A2 2 0 0 0 3.8 15 2 2 0 0 0 2 13.8V10h.6a2 2 0 0 0 1.2-1.8 2 2 0 0 0-.4-2.2l-.1-.1 2.8-2.8.1.1a2 2 0 0 0 2.2.4A2 2 0 0 0 9.6 2H14v.6a2 2 0 0 0 1.2 1.8 2 2 0 0 0 2.2-.4l.1-.1 2.8 2.8-.1.1a2 2 0 0 0-.4 2.2 2 2 0 0 0 1.8 1.2h.4V14h-.6a2 2 0 0 0-2 1z"/></svg></span>הגדרות</button>
       </nav>
-      <div class="sidebar-foot"><span class="status-dot"></span><span>המערכת פעילה</span><small>v0.5.0</small></div>
+      <div class="sidebar-foot"><span class="status-dot"></span><span>המערכת פעילה</span><small>v0.6.0</small></div>
     </aside>
     <main>
       <header class="topbar">
@@ -40,6 +43,6 @@
     <button id="mobile-more"><span class="mobile-nav-icon"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></span><small>עוד</small></button>
   </nav>
   <div id="toast" role="status"></div><div id="modal-root"></div>
-  <script type="module" src="app.js?v=0.5.0"></script>
+  <script type="module" src="app.js?v=0.6.0"></script>
 </body>
 </html>
