@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.1
+
+- תיקון cache-busting לנכסי JavaScript, CSS, לוגו ואייקונים בתוך Home Assistant
+- מניעת cache ארוך לנכסי ממשק דינמיים
+- בדיקת זמינות אמיתית ל־YouTube Data API, OpenAI ו־Gemini
+- הצגת המודל החסכוני בפועל והחלפה אוטומטית לפי ספק
+- כפתור הפצה ידנית גם בחלון פרטי הסרטון
+
 ## 0.2.0
 
 - בחירת אנשי קשר ישירות דרך Contact Picker במכשירי Android תומכים

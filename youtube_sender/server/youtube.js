@@ -37,6 +37,12 @@ export async function resolveChannel(input, apiKey) {
   };
 }
 
+export async function testYouTubeConnection(apiKey) {
+  if (!apiKey) throw new Error("YouTube API Key לא הוגדר");
+  await call("videos", { part: "id", id: "dQw4w9WgXcQ" }, apiKey);
+  return { ok: true, service: "youtube", message: "YouTube Data API זמין" };
+}
+
 export async function syncChannel(store, channel, apiKey) {
   const startedAt = new Date().toISOString();
   const playlistItems = [];

@@ -28,3 +28,13 @@ test("manual delivery, direct contacts and save feedback are wired", () => {
   assert.match(app, /ההגדרות נשמרו בהצלחה/);
 });
 
+test("versioned assets prevent stale Home Assistant caches", () => {
+  assert.match(html, /app\.js\?v=0\.2\.1/);
+  assert.match(html, /theme-granite\.css\?v=0\.2\.1/);
+});
+
+test("real provider connection checks and recommendation UI are wired", () => {
+  assert.match(app, /connections\/test/);
+  assert.match(app, /ai\/recommendation/);
+  assert.match(app, /מחובר וזמין/);
+});

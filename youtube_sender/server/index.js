@@ -4,9 +4,9 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { Store } from "./store.js";
 import { json, now, publicSettings, readBody } from "./lib.js";
-import { resolveChannel, syncChannel } from "./youtube.js";
+import { resolveChannel, syncChannel, testYouTubeConnection } from "./youtube.js";
 import { providers, prepareDelivery } from "./providers/index.js";
-import { generateMessage } from "./ai.js";
+import { generateMessage, recommendedModel, testAiConnection } from "./ai.js";
 import { mergeContacts, parseContacts } from "./importers.js";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -70,6 +70,16 @@ add("POST", /^\/api\/settings$/, async (req, res) => {
   const body = await readBody(req); for (const key of ["youtubeApiKey", "aiApiKey"]) if (body[key] === "••••••••") delete body[key];
   Object.assign(store.data.settings, body); await store.save(); json(res, 200, publicSettings(store.data.settings));
 });
+add("POST", /^\/api\/connections\/test$/, async (req, res) => {
+  const body = await readBody(req);
+  if (body.service === "youtube") return json(res, 200, await testYouTubeConnection(store.data.settings.youtubeApiKey));
+  if (body.service === "ai") return json(res, 200, await testAiConnection({ provider: store.data.settings.aiProvider, apiKey: store.data.settings.aiApiKey, model: store.data.settings.aiModel }));
+  return json(res, 400, { error: "שירות לא מוכר" });
+});
+add("GET", /^\/api\/ai\/recommendation$/, async (_req, res, _match, url) => {
+  const provider = url.searchParams.get("provider") || store.data.settings.aiProvider;
+  json(res, 200, { provider, model: recommendedModel(provider), automatic: true });
+});
 add("POST", /^\/api\/notifications\/read$/, async (_req, res) => { store.data.notifications.forEach((item) => { item.read = true; }); await store.save(); json(res, 200, { ok: true }); });
 
 function dashboard() {
@@ -82,13 +92,13 @@ const MIME = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; cha
 async function staticFile(req, res, pathname) {
   const candidate = path.join(ROOT, "public", pathname === "/" ? "index.html" : pathname);
   const safe = candidate.startsWith(path.join(ROOT, "public"));
-  try { if (!safe || !(await stat(candidate)).isFile()) throw new Error(); const data = await readFile(candidate); res.writeHead(200, { "content-type": MIME[path.extname(candidate)] || "application/octet-stream", "cache-control": pathname === "/" ? "no-cache" : "public, max-age=3600" }); res.end(data); }
+  try { if (!safe || !(await stat(candidate)).isFile()) throw new Error(); const data = await readFile(candidate); const dynamicAsset = /\.(?:html|js|css|webmanifest)$/.test(candidate) || pathname.endsWith("sw.js"); res.writeHead(200, { "content-type": MIME[path.extname(candidate)] || "application/octet-stream", "cache-control": dynamicAsset ? "no-cache, must-revalidate" : "public, max-age=3600" }); res.end(data); }
   catch { const data = await readFile(path.join(ROOT, "public", "index.html")); res.writeHead(200, { "content-type": MIME[".html"], "cache-control": "no-cache" }); res.end(data); }
 }
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://localhost");
-  if (url.pathname === "/health") return json(res, 200, { status: "ok", version: "0.2.0", time: now() });
+  if (url.pathname === "/health") return json(res, 200, { status: "ok", version: "0.2.1", time: now() });
   try {
     for (const item of routes) { const match = url.pathname.match(item.pattern); if (req.method === item.method && match) return await item.handler(req, res, match, url); }
     if (url.pathname.startsWith("/api/")) return json(res, 404, { error: "הנתיב לא נמצא" });
